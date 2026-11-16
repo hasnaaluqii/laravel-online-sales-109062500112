@@ -5,29 +5,28 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ShippingServiceController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatalogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ProductCatalogController::class, 'index'])->name('shop.index');
-Route::get('/products/{product:slug}', [ProductCatalogController::class, 'show'])->name('shop.show');
+Route::get('/produk/{product:slug}', [ProductCatalogController::class, 'show'])->name('shop.show');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])
-        ->name('login');
-
-    Route::post('/login', [AuthController::class, 'login'])
-        ->name('login.store');
-
-    Route::get('/register', [AuthController::class, 'showRegister'])
-        ->name('register');
-
-    Route::post('/register', [AuthController::class, 'register'])
-        ->name('register.store');
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/keranjang/{product}', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/keranjang/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/keranjang/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+});
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
