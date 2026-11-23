@@ -6,7 +6,6 @@
         <div class="card">
             <form method="POST" action="{{ route('checkout.store') }}">
                 @csrf
-                <input type="hidden" name="checkout_token" value="{{ $checkoutToken }}">
                 <label>Nama Penerima
                     <input class="input" name="recipient_name" value="{{ old('recipient_name', auth()->user()->name) }}" required>
                 </label>
